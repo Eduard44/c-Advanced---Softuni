@@ -1,0 +1,550 @@
+using System;
+using System.Linq;
+
+namespace Helen_s_Abduction
+{
+    class Program
+    {
+        public static int energy = int.Parse(Console.ReadLine());
+        public static int numberOfRows = int.Parse(Console.ReadLine());
+
+        public static char[][] field = new char[numberOfRows][];
+
+        public static int parisCol = 0;
+        public static int parisRow = 0;
+
+        public static int hellenCol = 0;
+        public static int hellenRow = 0;
+
+        public static int fieldColLength = 0;
+
+        public static bool saveHellen = false;
+        public static bool parisDies = false;
+
+        static void Main(string[] args)
+        {
+            for (int col = 0; col < field.Length; col++)
+            {
+                char[] input = 
+                    Console.ReadLine()
+                    .ToCharArray();
+
+                field[col] = new char[input.Length];
+
+                fieldColLength = input.Length;
+                for (int row = 0; row < field[col].Length; row++)
+                {
+                    field[col][row] = input[row];
+                    if (field[col][row] == 'H')
+                    {
+                        hellenCol = col;
+                        hellenRow = row;
+                    }
+                    else if (field[col][row] == 'P')
+                    {
+                        parisCol = col;
+                        parisRow = row;
+                    }
+                }
+            }
+            while (true)
+            {
+                if (energy<=0)
+                {
+                    for (int col = 0; col < field.Length; col++)
+                    {
+                        for (int row = 0; row < field[col].Length; row++)
+                        {
+                            if (col == parisCol && row == parisRow)
+                            {
+                                field[col][row] = 'X';
+                            }
+                        }
+                    }
+                    parisDies = true;
+                    break;
+                }
+                string[] command = 
+                    Console.ReadLine()
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+
+                string direction = command[0];
+
+                int spawnCol = int.Parse(command[1]);
+                int spawnRow = int.Parse(command[2]);
+
+                for (int col = 0; col < field.Length; col++)
+                {
+                    for (int row = 0; row < field[col].Length; row++)
+                    {
+                        if (col == spawnCol && row == spawnRow)
+                        {
+                            field[col][row] = 'S';
+                        }
+                    }
+                }
+
+                if (direction == "up"
+                    && parisCol - 1 >= 0)
+                {
+                    energy--;
+                    if (field[parisCol - 1][parisRow] == 'H' && energy >= 0)
+                    {
+                        for (int col = 0; col < field.Length; col++)
+                        {
+                            for (int row = 0; row < field[col].Length; row++)
+                            {
+                                if (col == hellenCol && row == hellenRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                                else if (col == parisCol && row == parisRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                            }
+                        }
+                        saveHellen = true;
+                        break;
+                    }
+                    else if (field[parisCol - 1][parisRow] == 'S')
+                    {
+                        if (energy <= 2)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol - 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol -= 1;
+                            parisDies = true;
+                            break;
+                        }
+                        else
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol - 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol -= 1;
+                            energy -= 2;
+                        }
+                    }
+                    else if (field[parisCol - 1][parisRow] == '-')
+                    {
+                        if (energy > 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol - 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol -= 1;
+                        }
+                        else if (energy <= 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol - 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol -= 1;
+                            parisDies = true;
+                            break;
+                        }
+                    }
+                }
+                else if (direction == "up" && parisCol - 1 < 0)
+                {
+                    energy--;
+                }
+                else if (direction == "down" && parisCol + 1 < field.Length)
+                {
+                    energy--;
+                    if (field[parisCol + 1][parisRow] == 'H' && energy >= 0)
+                    {
+                        for (int col = 0; col < field.Length; col++)
+                        {
+                            for (int row = 0; row < field[col].Length; row++)
+                            {
+                                if (col == hellenCol && row == hellenRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                                else if (col == parisCol && row == parisRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                            }
+                        }
+                        saveHellen = true;
+                        break;
+                    }
+                    else if (field[parisCol + 1][parisRow] == 'S')
+                    {
+                        if (energy <= 2)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol + 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol += 1;
+                            parisDies = true;
+                            break;
+                        }
+                        else
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol + 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol += 1;
+                            energy -= 2;
+                        }
+                    }
+                    else if (field[parisCol + 1][parisRow] == '-')
+                    {
+                        if (energy > 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol + 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol += 1;
+                        }
+                        else if (energy <= 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol + 1 && row == parisRow)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisCol += 1;
+                            parisDies = true;
+                            break;
+                        }
+                    }
+                }
+                else if (direction == "down" && parisCol + 1 >= field.Length)
+                {
+                    energy--;
+                }
+                else if (direction == "left" && parisRow - 1 >= 0)
+                {
+                    energy--;
+                    if (field[parisCol][parisRow - 1] == 'H' && energy >= 0)
+                    {
+                        for (int col = 0; col < field.Length; col++)
+                        {
+                            for (int row = 0; row < field[col].Length; row++)
+                            {
+                                if (col == hellenCol && row == hellenRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                                else if (col == parisCol && row == parisRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                            }
+                        }
+                        saveHellen = true;
+                        break;
+                    }
+                    else if (field[parisCol][parisRow - 1] == 'S')
+                    {
+                        if (energy <= 2)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow - 1)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow -= 1;
+                            parisDies = true;
+                            break;
+                        }
+                        else
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow - 1)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow -= 1;
+                            energy -= 2;
+                        }
+                    }
+                    else if (field[parisCol][parisRow - 1] == '-')
+                    {
+                        if (energy > 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow - 1)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow -= 1;
+                        }
+                        else if (energy <= 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow - 1)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow -= 1;
+                            parisDies = true;
+                            break;
+                        }
+                    }
+                }
+                else if (direction == "left" && parisRow - 1 < 0)
+                {
+                    energy--;
+                }
+                else if (direction == "right" && parisRow + 1 < fieldColLength)
+                {
+                    energy--;
+                    if (field[parisCol][parisRow + 1] == 'H' && energy >= 0)
+                    {
+                        for (int col = 0; col < field.Length; col++)
+                        {
+                            for (int row = 0; row < field[col].Length; row++)
+                            {
+                                if (col == hellenCol && row == hellenRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                                else if (col == parisCol && row == parisRow)
+                                {
+                                    field[col][row] = '-';
+                                }
+                            }
+                        }
+                        saveHellen = true;
+                        break;
+                    }
+                    else if (field[parisCol][parisRow + 1] == 'S')
+                    {
+                        if (energy <= 2)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow + 1)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow += 1;
+                            parisDies = true;
+                            break;
+                        }
+                        else
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow + 1)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow += 1;
+                            energy -= 2;
+                        }
+                    }
+                    else if (field[parisCol][parisRow + 1] == '-')
+                    {
+                        if (energy > 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow + 1)
+                                    {
+                                        field[col][row] = 'P';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow += 1;
+                        }
+                        else if (energy <= 0)
+                        {
+                            for (int col = 0; col < field.Length; col++)
+                            {
+                                for (int row = 0; row < field[col].Length; row++)
+                                {
+                                    if (col == parisCol && row == parisRow + 1)
+                                    {
+                                        field[col][row] = 'X';
+                                    }
+                                    else if (col == parisCol && row == parisRow)
+                                    {
+                                        field[col][row] = '-';
+                                    }
+                                }
+                            }
+                            parisRow += 1;
+                            parisDies = true;
+                            break;
+                        }
+                    }
+                }
+                else if (direction == "right" && parisRow + 1 >= fieldColLength)
+                {
+                    energy--;
+                }
+            }
+
+            if (saveHellen)
+            {
+                Console.WriteLine($"Paris has successfully abducted Helen! Energy left: {energy}");
+            }
+            else if (parisDies)
+            {
+                Console.WriteLine($"Paris died at {parisCol};{parisRow}.");
+            }
+
+            for (int col = 0; col < field.Length; col++)
+            {
+                for (int row = 0; row < field[col].Length; row++)
+                {
+                    Console.Write(field[col][row]);
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+}
