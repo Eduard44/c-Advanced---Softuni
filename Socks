@@ -1,0 +1,61 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Socks
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            List<int> leftSocks =
+                Console.ReadLine()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToList();
+
+            List<int> rightSocks =
+                Console.ReadLine()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToList();
+
+            List<int> sockPairs = new List<int>();
+
+            while (leftSocks.Count>0 && rightSocks.Count>0)
+            {
+                int currentSockLeft = leftSocks[leftSocks.Count-1];
+
+                int currentSockRight = rightSocks[0];
+
+                if(currentSockLeft == currentSockRight)
+                {
+                    leftSocks[leftSocks.Count - 1]++;
+                    rightSocks.RemoveAt(0);
+                }
+                else if (currentSockLeft > currentSockRight)
+                {
+                    int sum = currentSockLeft + currentSockRight;
+                    sockPairs.Add(sum);
+                    leftSocks.RemoveAt(leftSocks.Count - 1);
+                    rightSocks.RemoveAt(0);
+                }
+                else if (currentSockRight > currentSockLeft)
+                {
+                    leftSocks.RemoveAt(leftSocks.Count - 1);
+                }
+            }
+
+            int biggestPair = 0;
+            foreach (var pair in sockPairs)
+            {
+                if (pair>biggestPair)
+                {
+                    biggestPair = pair;
+                }
+            }
+            Console.WriteLine(biggestPair);
+            Console.WriteLine(string.Join(" ", sockPairs));
+        }
+    }
+}
